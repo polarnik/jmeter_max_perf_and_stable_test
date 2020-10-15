@@ -143,7 +143,7 @@
                     <suppressJMeterOutput>false</suppressJMeterOutput>
                     <ignoreResultFailures>true</ignoreResultFailures>
                     <guiTestFile>${project.basedir}/src/test/jmeter/${jmx}.jmx</guiTestFile>
-
+                    <propertiesReplacedByCustomFiles>true</propertiesReplacedByCustomFiles>
 
 
                     <propertiesReportGenerator>
