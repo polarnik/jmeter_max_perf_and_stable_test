@@ -258,8 +258,8 @@
         	<properties>
         		<isStable>1</isStable>
         		<duration>600</duration>
-        		<tps>8.0</tps>
-        		<thread_count>100</thread_count>
+        		<tps>7.65</tps>
+        		<thread_count>40</thread_count>
         		<title>Stability test</title>
         	</properties>
         </profile>
@@ -270,7 +270,7 @@
         		<isMaxPerf>1</isMaxPerf>
         		<duration>300</duration>
         		<tps>0.1</tps>
-        		<thread_count>150</thread_count>
+        		<thread_count>250</thread_count>
         		<title>MaxPerf</title>
         	</properties>
         </profile>
