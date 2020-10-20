@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>info.ragozin.loadlab</groupId>
-    <artifactId>jmeter-wp-homework</artifactId>
+    <artifactId>wp-homework</artifactId>
     <version>0.1.0</version>
     <name>start_page_test MaxPerf and Stable</name>
-    <description>Apache.JMeter test for http://wp.loadlab.ragozin.info/</description>
+    <description>Apache.JMeter and Gatling test for http://wp.loadlab.ragozin.info/</description>
 
     <!-- Properties -->
     <properties>
@@ -27,6 +27,9 @@
 
         <jmeter.maven.plugin.version>3.1.2</jmeter.maven.plugin.version>
         <jmeter.version>5.3</jmeter.version>
+
+        <gatling.version>3.3.1</gatling.version>
+        <gatling-plugin.version>3.0.5</gatling-plugin.version>
     </properties>
 
     <licenses>
@@ -54,8 +57,27 @@
 
     <!-- Build Settings -->
     <build>
+        <testSourceDirectory>${project.basedir}/src/test/gatling</testSourceDirectory>
         <plugins>
-
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <args>
+                        <!-- work-around for https://issues.scala-lang.org/browse/SI-8358 -->
+                        <arg>-nobootcp</arg>
+                    </args>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.lazerycode.jmeter</groupId>
                 <artifactId>jmeter-maven-plugin</artifactId>
@@ -184,10 +206,95 @@
                         </arguments>
                     </jMeterProcessJVMSettings>                    
                 </configuration>
-
-
             </plugin>
 
+
+            <plugin>
+                <groupId>io.gatling</groupId>
+                <artifactId>gatling-maven-plugin</artifactId>
+                <version>${gatling-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--
+                    A name of a Simulation class to run.
+                    -->
+                    <simulationClass>${namespace}.${simulation}</simulationClass>
+                    <!--
+                    Iterate over multiple simulations if more than one simulation file is found. By default false.
+                    If multiple simulations are found but {runMultipleSimulations} is false the execution will fail.
+                    -->
+                    <runMultipleSimulations>true</runMultipleSimulations>
+                    <!--
+                    List of include patterns to use for scanning. Includes all simulations by default.
+                    -->
+                    <includes>
+                        <include>${namespace}.${simulation}</include>
+                    </includes>
+                    <!--
+                    List of exclude patterns to use for scanning. Excludes none by default.
+                    -->
+                    <excludes>
+                    </excludes>
+                    <!--
+                    Run simulation but does not generate reports. By default false.
+                    -->
+                    <noReports>false</noReports>
+
+                    <runDescription>${project.groupId}:${project.artifactId} ${namespace}.${simulation} - ${maven.build.timestamp} ${runDescription}</runDescription>
+
+                    <!--
+                    Will cause the project build to look successful, rather than fail, even
+                    if there are Gatling test failures. This can be useful on a continuous
+                    integration server, if your only option to be able to collect output
+                    files, is if the project builds successfully.
+                    -->
+                    <failOnError>true</failOnError>
+
+                    <!--
+                    Continue execution of simulations despite assertion failure. If you have
+                    some stack of simulations and you want to get results from all simulations
+                    despite some assertion failures in previous one.
+                    -->
+                    <continueOnAssertionFailure>false</continueOnAssertionFailure>
+
+
+                    <useOldJenkinsJUnitSupport>false</useOldJenkinsJUnitSupport>
+
+                    <!--
+                    Extra JVM arguments to pass when running Gatling.
+                    -->
+                    <jvmArgs>
+                        <jvmArg>-server</jvmArg>
+                        <jvmArg>-Xmx3G</jvmArg>
+                    </jvmArgs>
+
+                    <!--
+                    Override Gatling's default JVM args, instead of replacing them.
+                    -->
+                    <overrideJvmArgs>false</overrideJvmArgs>
+
+                    <!--
+                    Propagate System properties to forked processes.
+                    -->
+                    <propagateSystemProperties>true</propagateSystemProperties>
+
+
+                    <compilerJvmArgs>
+                        <compilerJvmArg></compilerJvmArg>
+                    </compilerJvmArgs>
+
+                    <!-- if compiler should be disabled, typically because another plugin has already compiled sources -->
+                    <disableCompiler>false</disableCompiler>
+
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -253,6 +360,65 @@
             </build>
         </profile>
 
+        <profile>
+            <id>scala-2.12+gatling</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <scala.version>2.12.7</scala.version>
+                <scala.compat.version>2.12</scala.compat.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-library</artifactId>
+                    <version>${scala.version}</version>
+                </dependency>
+                <!--
+                <dependency>
+                    <groupId>org.scala-lang.modules</groupId>
+                    <artifactId>scala-xml_${scala.compat.version}</artifactId>
+                    <version>1.1.1</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.scala-lang.modules</groupId>
+                    <artifactId>scala-parser-combinators_${scala.compat.version}</artifactId>
+                    <version>1.1.1</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.scala-lang.modules</groupId>
+                    <artifactId>scala-swing_${scala.compat.version}</artifactId>
+                    <version>2.0.3</version>
+                </dependency>
+                -->
+                <dependency>
+                    <groupId>io.gatling.highcharts</groupId>
+                    <artifactId>gatling-charts-highcharts</artifactId>
+                    <version>${gatling.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>io.gatling</groupId>
+                    <artifactId>gatling-app</artifactId>
+                    <version>${gatling.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>io.gatling</groupId>
+                    <artifactId>gatling-recorder</artifactId>
+                    <version>${gatling.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.aeonbits.owner</groupId>
+                    <artifactId>owner</artifactId>
+                    <version>1.0.10</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        
         <profile>
         	<id>Stable</id>
         	<properties>
