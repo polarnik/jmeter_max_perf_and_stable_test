@@ -38,28 +38,13 @@ object Protocol {
     .doNotTrackHeader("1")
     .acceptEncodingHeader("gzip, deflate, br")
     .acceptLanguageHeader("en-US,en;q=0.5")
-    //.inferHtmlResources()
-    .shareConnections
-    .maxConnectionsPerHostLikeFirefox
-    .header("Upgrade-Insecure-Requests", "1")
-    //.header("X-Forwarded-For", "${user_ip_address}")
-    .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
-    .disableWarmUp
-    .noProxyFor(cfg.noProxyFor())
-    .build
-    .modify(_.proxyPart.proxy).setTo(httpProxy)
-
-  val localHttpConf = http
-    .baseUrl(s"http://localhost:77777777777") // Here is the root for all relative URLs
-    .acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8") // Here are the common headers
-    .doNotTrackHeader("1")
-    .acceptEncodingHeader("gzip, deflate, br")
-    .acceptLanguageHeader("en-US,en;q=0.5")
     .inferHtmlResources()
+    .nameInferredHtmlResources(_ => "static")
     .shareConnections
     .maxConnectionsPerHostLikeFirefox
     .header("Upgrade-Insecure-Requests", "1")
-    //.header("X-Forwarded-For", "${user_ip_address}")
+    .header("X-Scenario", "${scenario}")
+    .header("X-userId", "${userId}")
     .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
     .disableWarmUp
     .noProxyFor(cfg.noProxyFor())

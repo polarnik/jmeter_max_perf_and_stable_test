@@ -225,17 +225,17 @@
                     <!--
                     A name of a Simulation class to run.
                     -->
-                    <simulationClass>${namespace}.${simulation}</simulationClass>
+                    <simulationClass>info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_RPS</simulationClass>
                     <!--
                     Iterate over multiple simulations if more than one simulation file is found. By default false.
                     If multiple simulations are found but {runMultipleSimulations} is false the execution will fail.
                     -->
-                    <runMultipleSimulations>true</runMultipleSimulations>
+                    <runMultipleSimulations>false</runMultipleSimulations>
                     <!--
                     List of include patterns to use for scanning. Includes all simulations by default.
                     -->
                     <includes>
-                        <include>${namespace}.${simulation}</include>
+                        <include>info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_RPS</include>
                     </includes>
                     <!--
                     List of exclude patterns to use for scanning. Excludes none by default.
@@ -247,7 +247,7 @@
                     -->
                     <noReports>false</noReports>
 
-                    <runDescription>${project.groupId}:${project.artifactId} ${namespace}.${simulation} - ${maven.build.timestamp} ${runDescription}</runDescription>
+                    <runDescription>${project.groupId}:${project.artifactId} info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_RPS - ${maven.build.timestamp}</runDescription>
 
                     <!--
                     Will cause the project build to look successful, rather than fail, even
@@ -272,7 +272,13 @@
                     -->
                     <jvmArgs>
                         <jvmArg>-server</jvmArg>
-                        <jvmArg>-Xmx3G</jvmArg>
+                        <arg>-DisMaxPerf=${isMaxPerf}</arg>
+                        <arg>-DisStable=${isStable}</arg>
+                        <arg>-Dduration=${duration}</arg>
+                        <arg>-Dtps=${tps}</arg>
+                        <arg>-Dthread_count=${thread_count}</arg>
+                        <arg>-Dtitle="${title}"</arg>
+
                     </jvmArgs>
 
                     <!--
@@ -309,7 +315,7 @@
                         <artifactId>jmeter-maven-plugin</artifactId>
                         <configuration>
                                 <proxyConfig>
-                                    <host>127.0.0.1</host>
+                                    <host>localhost</host>
                                     <port>8888</port>
                                 </proxyConfig>
                         </configuration>
@@ -361,7 +367,7 @@
         </profile>
 
         <profile>
-            <id>scala-2.12+gatling</id>
+            <id>gatling</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -374,24 +380,8 @@
                     <groupId>org.scala-lang</groupId>
                     <artifactId>scala-library</artifactId>
                     <version>${scala.version}</version>
+                    <scope>test</scope>
                 </dependency>
-                <!--
-                <dependency>
-                    <groupId>org.scala-lang.modules</groupId>
-                    <artifactId>scala-xml_${scala.compat.version}</artifactId>
-                    <version>1.1.1</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.scala-lang.modules</groupId>
-                    <artifactId>scala-parser-combinators_${scala.compat.version}</artifactId>
-                    <version>1.1.1</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.scala-lang.modules</groupId>
-                    <artifactId>scala-swing_${scala.compat.version}</artifactId>
-                    <version>2.0.3</version>
-                </dependency>
-                -->
                 <dependency>
                     <groupId>io.gatling.highcharts</groupId>
                     <artifactId>gatling-charts-highcharts</artifactId>
@@ -434,9 +424,9 @@
         	<id>MaxPerf</id>
         	<properties>
         		<isMaxPerf>1</isMaxPerf>
-        		<duration>300</duration>
+        		<duration>60</duration>
         		<tps>0.1</tps>
-        		<thread_count>250</thread_count>
+        		<thread_count>100</thread_count>
         		<title>MaxPerf</title>
         	</properties>
         </profile>

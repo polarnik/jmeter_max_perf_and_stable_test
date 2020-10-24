@@ -1,4 +1,4 @@
-package io.qaload.gatling.reportExample.setting
+package info.ragozin.loadlab.wp.setting
 
 import java.lang.reflect.Method
 import java.time.OffsetDateTime
@@ -16,8 +16,8 @@ import scala.math._
 @Sources (
   Array(
     "classpath:user.properties",
-    "file:${user.home}/user.properties",
-    "system:env",
+    //"file:${user.home}/user.properties",
+    //"system:env",
     "system:properties"
   )
 )
@@ -32,40 +32,53 @@ trait TestConfig extends Config {
   @ConverterClass(classOf[HostConvertor])
   def host(): String
 
-  @Key("env")
-  @DefaultValue("dev")
-  def env(): String
-
-  @Key("server.${env}.http.scheme")
+  @Key("http.scheme")
   @DefaultValue("http")
   def scheme(): String
 
-  @Key("server.${env}.http.port")
+  @Key("host.name")
+  @DefaultValue("wp.loadlab.ragozin.info")
+  def hostname(): String
+
+  @Key("http.port")
   @DefaultValue("80")
   def port(): Int
 
-  @Key("server.${env}.host.name")
-  @DefaultValue("localhost")
-  def hostname(): String
-
   @Key("http.proxy.host")
-  @DefaultValue("100")
+  @DefaultValue("")
   def httpProxyHost(): String
 
   @Key("http.proxy.port")
-  @DefaultValue("100")
+  @DefaultValue("")
   def httpProxyPort(): Int
 
   @Key("http.proxy.noProxyFor")
   @DefaultValue("google.com, yandex.ru")
   def noProxyFor(): String
 
+  @Key("isStable")
+  @DefaultValue("0")
+  def isStable(): Int
 
-  @Key("load.threads.max")
-  @DefaultValue("100")
-  def maxThreads(): Int
+  @Key("isMaxPerf")
+  @DefaultValue("0")
+  def isMaxPerf(): Int
 
+  @Key("duration")
+  @DefaultValue("0")
+  def duration(): Int
 
+  @Key("tps")
+  @DefaultValue("0.0")
+  def tps(): Double
+
+  @Key("thread_count")
+  @DefaultValue("0")
+  def thread_count(): Int
+
+  @Key("title")
+  @DefaultValue("")
+  def title(): String
 }
 
 class RunIdConvertor extends Converter[String] {

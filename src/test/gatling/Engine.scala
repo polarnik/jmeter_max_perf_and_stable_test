@@ -4,7 +4,7 @@ import java.util.{Calendar, Date, GregorianCalendar}
 
 import io.gatling.app.Gatling
 import io.gatling.core.ConfigKeys.{core, data}
-import io.qaload.gatling.reportExample.setting.TestConfig
+import info.ragozin.loadlab.wp.setting.TestConfig
 import org.aeonbits.owner.ConfigFactory
 
 /**
@@ -24,14 +24,8 @@ object Engine extends App {
 
     data.graphite.RootPathPrefix -> s"v2.gatling.${cfg.run()}.${cfg.host()}",
 
-//    core.SimulationClass ->  "io.qaload.gatling.reportExample.simulation.CloseModel_IncrementConcurrentUsers",
-//    core.RunDescription -> "closed workload model"
-
-//      core.SimulationClass ->  "io.qaload.gatling.reportExample.simulation.OpenModel_IncrementUsersPerSec",
-//      core.RunDescription -> "open workload model"
-
-        core.SimulationClass ->  "io.qaload.gatling.reportExample.simulation.OpenModel_HeavisideUsers",
-        core.RunDescription -> "open workload model - Stress Test"
+    core.SimulationClass -> "info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_RPS",
+    core.RunDescription -> "open workload model - Stress Test"
   )
 
   Gatling.fromMap(config)
