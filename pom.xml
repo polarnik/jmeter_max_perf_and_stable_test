@@ -225,7 +225,7 @@
                     <!--
                     A name of a Simulation class to run.
                     -->
-                    <simulationClass>info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_RPS</simulationClass>
+                    <simulationClass>${namespace}.MaxPerf_CloseModel_RPS</simulationClass>
                     <!--
                     Iterate over multiple simulations if more than one simulation file is found. By default false.
                     If multiple simulations are found but {runMultipleSimulations} is false the execution will fail.
@@ -235,7 +235,7 @@
                     List of include patterns to use for scanning. Includes all simulations by default.
                     -->
                     <includes>
-                        <include>info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_RPS</include>
+                        <include>${namespace}.MaxPerf_CloseModel_RPS</include>
                     </includes>
                     <!--
                     List of exclude patterns to use for scanning. Excludes none by default.
@@ -374,6 +374,8 @@
             <properties>
                 <scala.version>2.12.7</scala.version>
                 <scala.compat.version>2.12</scala.compat.version>
+                <namespace>info.ragozin.loadlab.wp.simulation</namespace>
+                <simulation>MaxPerf_CloseModel_RPS</simulation>
             </properties>
             <dependencies>
                 <dependency>

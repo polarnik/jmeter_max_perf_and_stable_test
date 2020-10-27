@@ -16,7 +16,7 @@ import scala.math._
 @Sources (
   Array(
     "classpath:user.properties",
-    //"file:${user.home}/user.properties",
+    "file:${user.home}/user.properties",
     //"system:env",
     "system:properties"
   )
@@ -75,6 +75,10 @@ trait TestConfig extends Config {
   @Key("thread_count")
   @DefaultValue("0")
   def thread_count(): Int
+
+  @Key("pase_sec")
+  @DefaultValue("0.0")
+  def pase_sec(): Double
 
   @Key("title")
   @DefaultValue("")
