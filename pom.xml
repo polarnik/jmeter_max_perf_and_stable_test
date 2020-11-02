@@ -58,310 +58,147 @@
     <!-- Build Settings -->
     <build>
         <testSourceDirectory>${project.basedir}/src/test/gatling</testSourceDirectory>
-        <plugins>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.2.2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <args>
-                        <!-- work-around for https://issues.scala-lang.org/browse/SI-8358 -->
-                        <arg>-nobootcp</arg>
-                    </args>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.lazerycode.jmeter</groupId>
-                <artifactId>jmeter-maven-plugin</artifactId>
-                <version>${jmeter.maven.plugin.version}</version>
-
-                <executions>
-                    <!-- Generate JMeter configuration -->
-                    <execution>
-                        <id>configuration</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>configure</goal>
-                        </goals>
-                    </execution>
-                    <!-- Run JMeter tests -->
-                    <execution>
-                        <id>jmeter-tests</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>jmeter</goal>
-                        </goals>
-                    </execution>
-                    <!-- Fail build on errors in test -->
-                    <execution>
-                        <id>jmeter-check-results</id>
-                        <goals>
-                            <goal>results</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-                <configuration>
-                    <testFilesIncluded>
-                        <jMeterTestFile>${jmx}.jmx</jMeterTestFile>
-                    </testFilesIncluded>
-                    <jmeterVersion>${jmeter.version}</jmeterVersion>
-
-                    <jmeterExtensions>
-                        <!-- Custom Thread Groups
-                        https://jmeter-plugins.org/?search=jpgc-casutg
-			            http://repo.maven.apache.org/maven2/kg/apc/jmeter-plugins-casutg/
-                        <artifact>kg.apc:jmeter-plugins-casutg:2.9</artifact>
-			            -->                        
-                    </jmeterExtensions>
-
-                    <testPlanLibraries>
-                        <!-- JMeter Plugins Common Classes: Various utility classes to ease development of plugins
-			            http://repo.maven.apache.org/maven2/kg/apc/jmeter-plugins-cmn-jmeter/
-                        <artifact>kg.apc:jmeter-plugins-cmn-jmeter:0.6</artifact>
-			            -->                        
-                    </testPlanLibraries>
-
-                    <downloadExtensionDependencies>false</downloadExtensionDependencies>
-                    <downloadLibraryDependencies>false</downloadLibraryDependencies>
-                    <downloadOptionalDependencies>false</downloadOptionalDependencies>
-                    <downloadJMeterDependencies>true</downloadJMeterDependencies>
-
-                    <propertiesUser>
-                        <testId>${testId}</testId>
-                        <data.dir>${project.basedir}/src/test/jmeter/data</data.dir>
-
-                        <influxdb.host>${influxdb.host}</influxdb.host>
-                        <influxdb.port>${influxdb.port}</influxdb.port>
-                        <influxdb.database>${influxdb.database}</influxdb.database>                        
-
-						<isStable>${isStable}</isStable>
-						<isMaxPerf>${isMaxPerf}</isMaxPerf>
-						<duration>${duration}</duration>
-						<tps>${tps}</tps>
-						<thread_count>${thread_count}</thread_count>
-						<title>${title}</title>
-                    </propertiesUser>
-
-                    <propertiesJMeter>
-                        <jmeter.save.saveservice.thread_counts>true</jmeter.save.saveservice.thread_counts>
-                        <jmeter.save.saveservice.subresults>true</jmeter.save.saveservice.subresults>
-                        <sample_variables></sample_variables>
-                        <!-- # Disable sent statistics to https://jmeter-plugins.org/stats/ -->
-                        <jpgc.repo.sendstats>false</jpgc.repo.sendstats>
-                        <sampleresult.default.encoding>UTF-8</sampleresult.default.encoding>						
-		            </propertiesJMeter>
-
-                    <testResultsTimestamp>false</testResultsTimestamp>
-                    <overrideRootLogLevel>WARN</overrideRootLogLevel>
-                    <suppressJMeterOutput>false</suppressJMeterOutput>
-                    <ignoreResultFailures>true</ignoreResultFailures>
-                    <guiTestFile>${project.basedir}/src/test/jmeter/${jmx}.jmx</guiTestFile>
-                    <propertiesReplacedByCustomFiles>true</propertiesReplacedByCustomFiles>
-
-
-                    <propertiesReportGenerator>
-                        <jmeter.reportgenerator.overall_granularity>1000</jmeter.reportgenerator.overall_granularity>
-                        <jmeter.reportgenerator.graph.responseTimeDistribution.property.set_granularity>1000</jmeter.reportgenerator.graph.responseTimeDistribution.property.set_granularity>
-                    </propertiesReportGenerator>
-
-
-
-                    <resultsFileFormat>csv</resultsFileFormat>
-                    <generateReports>true</generateReports>
-                    <resultsDirectory>${project.build.directory}/jmeter/results</resultsDirectory>
-                    <reportDirectory>${project.build.directory}/jmeter/results</reportDirectory>
-                    
-
-                    <!-- Configuring the jvm that the jmeter process runs in
-                    https://github.com/jmeter-maven-plugin/jmeter-maven-plugin/wiki/Configuring-the-jvm-that-the-jmeter-process-runs-in
-                    http://reins.altervista.org/java/A_Collection_of_JVM_Options_MP.html
-                    https://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html
-                    -->
-                    <jMeterProcessJVMSettings>
-                        <xms>32</xms>
-                        <xmx>512</xmx>
-                        <arguments>
-                            <argument>-XX:MaxMetaspaceSize=256m</argument>
-
-                            <argument>-XX:+UseG1GC</argument>
-                            <argument>-XX:MaxGCPauseMillis=100</argument>
-                            <argument>-XX:G1ReservePercent=20</argument>
-
-                            <argument>-Duser.language=en</argument>
-                            <argument>-Duser.region=EN</argument>
-
-                            <argument>-Dfile.encoding=UTF-8</argument>
-
-                            <argument>-XX:-HeapDumpOnOutOfMemoryError</argument>
-                            <argument>-server</argument>
-                        </arguments>
-                    </jMeterProcessJVMSettings>                    
-                </configuration>
-            </plugin>
-
-
-            <plugin>
-                <groupId>io.gatling</groupId>
-                <artifactId>gatling-maven-plugin</artifactId>
-                <version>${gatling-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!--
-                    A name of a Simulation class to run.
-                    -->
-                    <simulationClass>${namespace}.MaxPerf_CloseModel_RPS</simulationClass>
-                    <!--
-                    Iterate over multiple simulations if more than one simulation file is found. By default false.
-                    If multiple simulations are found but {runMultipleSimulations} is false the execution will fail.
-                    -->
-                    <runMultipleSimulations>false</runMultipleSimulations>
-                    <!--
-                    List of include patterns to use for scanning. Includes all simulations by default.
-                    -->
-                    <includes>
-                        <include>${namespace}.MaxPerf_CloseModel_RPS</include>
-                    </includes>
-                    <!--
-                    List of exclude patterns to use for scanning. Excludes none by default.
-                    -->
-                    <excludes>
-                    </excludes>
-                    <!--
-                    Run simulation but does not generate reports. By default false.
-                    -->
-                    <noReports>false</noReports>
-
-                    <runDescription>${project.groupId}:${project.artifactId} info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_RPS - ${maven.build.timestamp}</runDescription>
-
-                    <!--
-                    Will cause the project build to look successful, rather than fail, even
-                    if there are Gatling test failures. This can be useful on a continuous
-                    integration server, if your only option to be able to collect output
-                    files, is if the project builds successfully.
-                    -->
-                    <failOnError>true</failOnError>
-
-                    <!--
-                    Continue execution of simulations despite assertion failure. If you have
-                    some stack of simulations and you want to get results from all simulations
-                    despite some assertion failures in previous one.
-                    -->
-                    <continueOnAssertionFailure>false</continueOnAssertionFailure>
-
-
-                    <useOldJenkinsJUnitSupport>false</useOldJenkinsJUnitSupport>
-
-                    <!--
-                    Extra JVM arguments to pass when running Gatling.
-                    -->
-                    <jvmArgs>
-                        <jvmArg>-server</jvmArg>
-                        <arg>-DisMaxPerf=${isMaxPerf}</arg>
-                        <arg>-DisStable=${isStable}</arg>
-                        <arg>-Dduration=${duration}</arg>
-                        <arg>-Dtps=${tps}</arg>
-                        <arg>-Dthread_count=${thread_count}</arg>
-                        <arg>-Dtitle="${title}"</arg>
-
-                    </jvmArgs>
-
-                    <!--
-                    Override Gatling's default JVM args, instead of replacing them.
-                    -->
-                    <overrideJvmArgs>false</overrideJvmArgs>
-
-                    <!--
-                    Propagate System properties to forked processes.
-                    -->
-                    <propagateSystemProperties>true</propagateSystemProperties>
-
-
-                    <compilerJvmArgs>
-                        <compilerJvmArg></compilerJvmArg>
-                    </compilerJvmArgs>
-
-                    <!-- if compiler should be disabled, typically because another plugin has already compiled sources -->
-                    <disableCompiler>false</disableCompiler>
-
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
     <profiles>
-        <!-- HTTP proxy configuration -->
         <profile>
-            <id>proxy</id>
+            <id>jmeter</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
             <build>
                 <plugins>
                     <plugin>
                         <groupId>com.lazerycode.jmeter</groupId>
                         <artifactId>jmeter-maven-plugin</artifactId>
+                        <version>${jmeter.maven.plugin.version}</version>
+
+                        <executions>
+                            <!-- Generate JMeter configuration -->
+                            <execution>
+                                <id>configuration</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>configure</goal>
+                                </goals>
+                            </execution>
+                            <!-- Run JMeter tests -->
+                            <execution>
+                                <id>jmeter-tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>jmeter</goal>
+                                </goals>
+                            </execution>
+                            <!-- Fail build on errors in test -->
+                            <execution>
+                                <id>jmeter-check-results</id>
+                                <goals>
+                                    <goal>results</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
                         <configuration>
-                                <proxyConfig>
-                                    <host>localhost</host>
-                                    <port>8888</port>
-                                </proxyConfig>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!-- SOCKS proxy configuration -->
-        <profile>
-            <id>socks</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.lazerycode.jmeter</groupId>
-                        <artifactId>jmeter-maven-plugin</artifactId>
-                        <configuration>
+                            <testFilesIncluded>
+                                <jMeterTestFile>${jmx}.jmx</jMeterTestFile>
+                            </testFilesIncluded>
+                            <jmeterVersion>${jmeter.version}</jmeterVersion>
+
+                            <jmeterExtensions>
+                                <!-- Custom Thread Groups
+                                https://jmeter-plugins.org/?search=jpgc-casutg
+                                http://repo.maven.apache.org/maven2/kg/apc/jmeter-plugins-casutg/
+                                <artifact>kg.apc:jmeter-plugins-casutg:2.9</artifact>
+                                -->
+                            </jmeterExtensions>
+
+                            <testPlanLibraries>
+                                <!-- JMeter Plugins Common Classes: Various utility classes to ease development of plugins
+                                http://repo.maven.apache.org/maven2/kg/apc/jmeter-plugins-cmn-jmeter/
+                                <artifact>kg.apc:jmeter-plugins-cmn-jmeter:0.6</artifact>
+                                -->
+                            </testPlanLibraries>
+
+                            <downloadExtensionDependencies>false</downloadExtensionDependencies>
+                            <downloadLibraryDependencies>false</downloadLibraryDependencies>
+                            <downloadOptionalDependencies>false</downloadOptionalDependencies>
+                            <downloadJMeterDependencies>true</downloadJMeterDependencies>
+
+                            <propertiesUser>
+                                <testId>${testId}</testId>
+                                <data.dir>${project.basedir}/src/test/jmeter/data</data.dir>
+
+                                <influxdb.host>${influxdb.host}</influxdb.host>
+                                <influxdb.port>${influxdb.port}</influxdb.port>
+                                <influxdb.database>${influxdb.database}</influxdb.database>
+
+                                <isStable>${isStable}</isStable>
+                                <isMaxPerf>${isMaxPerf}</isMaxPerf>
+                                <duration>${duration}</duration>
+                                <tps>${tps}</tps>
+                                <thread_count>${thread_count}</thread_count>
+                                <title>${title}</title>
+                            </propertiesUser>
+
+                            <propertiesJMeter>
+                                <jmeter.save.saveservice.thread_counts>true</jmeter.save.saveservice.thread_counts>
+                                <jmeter.save.saveservice.subresults>true</jmeter.save.saveservice.subresults>
+                                <sample_variables></sample_variables>
+                                <!-- # Disable sent statistics to https://jmeter-plugins.org/stats/ -->
+                                <jpgc.repo.sendstats>false</jpgc.repo.sendstats>
+                                <sampleresult.default.encoding>UTF-8</sampleresult.default.encoding>
+                            </propertiesJMeter>
+
+                            <testResultsTimestamp>false</testResultsTimestamp>
+                            <overrideRootLogLevel>WARN</overrideRootLogLevel>
+                            <suppressJMeterOutput>false</suppressJMeterOutput>
+                            <ignoreResultFailures>true</ignoreResultFailures>
+                            <guiTestFile>${project.basedir}/src/test/jmeter/${jmx}.jmx</guiTestFile>
+                            <propertiesReplacedByCustomFiles>true</propertiesReplacedByCustomFiles>
+
+
+                            <propertiesReportGenerator>
+                                <jmeter.reportgenerator.overall_granularity>1000</jmeter.reportgenerator.overall_granularity>
+                                <jmeter.reportgenerator.graph.responseTimeDistribution.property.set_granularity>1000</jmeter.reportgenerator.graph.responseTimeDistribution.property.set_granularity>
+                            </propertiesReportGenerator>
+
+
+
+                            <resultsFileFormat>csv</resultsFileFormat>
+                            <generateReports>true</generateReports>
+                            <resultsDirectory>${project.build.directory}/jmeter/results</resultsDirectory>
+                            <reportDirectory>${project.build.directory}/jmeter/results</reportDirectory>
+
+
+                            <!-- Configuring the jvm that the jmeter process runs in
+                            https://github.com/jmeter-maven-plugin/jmeter-maven-plugin/wiki/Configuring-the-jvm-that-the-jmeter-process-runs-in
+                            http://reins.altervista.org/java/A_Collection_of_JVM_Options_MP.html
+                            https://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html
+                            -->
                             <jMeterProcessJVMSettings>
+                                <xms>32</xms>
+                                <xmx>512</xmx>
                                 <arguments>
-                                    <argument>-DsocksProxyHost=127.0.0.1</argument>
-                                    <argument>-DsocksProxyPort=8888</argument>
+                                    <argument>-XX:MaxMetaspaceSize=256m</argument>
+
+                                    <argument>-XX:+UseG1GC</argument>
+                                    <argument>-XX:MaxGCPauseMillis=100</argument>
+                                    <argument>-XX:G1ReservePercent=20</argument>
+
+                                    <argument>-Duser.language=en</argument>
+                                    <argument>-Duser.region=EN</argument>
+
+                                    <argument>-Dfile.encoding=UTF-8</argument>
+
+                                    <argument>-XX:-HeapDumpOnOutOfMemoryError</argument>
+                                    <argument>-server</argument>
                                 </arguments>
                             </jMeterProcessJVMSettings>
                         </configuration>
                     </plugin>
-                </plugins>
-            </build>
-        </profile>
 
-        <profile>
-            <id>zoom</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.lazerycode.jmeter</groupId>
-                        <artifactId>jmeter-maven-plugin</artifactId>
-                        <configuration>
-                            <propertiesJMeter>
-                                <jmeter.hidpi.mode>true</jmeter.hidpi.mode>
-                                <jmeter.hidpi.scale.factor>2.0</jmeter.hidpi.scale.factor>
-                                <jmeter.toolbar.icons.size>32x32</jmeter.toolbar.icons.size>
-                                <jmeter.tree.icons.size>24x24</jmeter.tree.icons.size>
-                                <jsyntaxtextarea.font.family>Hack</jsyntaxtextarea.font.family>
-                                <jsyntaxtextarea.font.size>24</jsyntaxtextarea.font.size>
-                            </propertiesJMeter>
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -409,8 +246,127 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>scala-maven-plugin</artifactId>
+                        <version>3.2.2</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile</goal>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <args>
+                                <!-- work-around for https://issues.scala-lang.org/browse/SI-8358 -->
+                                <arg>-nobootcp</arg>
+                            </args>
+                        </configuration>
+                    </plugin>
+
+
+                    <plugin>
+                        <groupId>io.gatling</groupId>
+                        <artifactId>gatling-maven-plugin</artifactId>
+                        <version>${gatling-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!--
+                            A name of a Simulation class to run.
+                            -->
+                            <simulationClass>${namespace}.MaxPerf_CloseModel_RPS</simulationClass>
+                            <!--
+                            Iterate over multiple simulations if more than one simulation file is found. By default false.
+                            If multiple simulations are found but {runMultipleSimulations} is false the execution will fail.
+                            -->
+                            <runMultipleSimulations>false</runMultipleSimulations>
+                            <!--
+                            List of include patterns to use for scanning. Includes all simulations by default.
+                            -->
+                            <includes>
+                                <include>${namespace}.MaxPerf_CloseModel_RPS</include>
+                            </includes>
+                            <!--
+                            List of exclude patterns to use for scanning. Excludes none by default.
+                            -->
+                            <excludes>
+                            </excludes>
+                            <!--
+                            Run simulation but does not generate reports. By default false.
+                            -->
+                            <noReports>false</noReports>
+
+                            <runDescription>${project.groupId}:${project.artifactId} info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_RPS - ${maven.build.timestamp}</runDescription>
+
+                            <!--
+                            Will cause the project build to look successful, rather than fail, even
+                            if there are Gatling test failures. This can be useful on a continuous
+                            integration server, if your only option to be able to collect output
+                            files, is if the project builds successfully.
+                            -->
+                            <failOnError>true</failOnError>
+
+                            <!--
+                            Continue execution of simulations despite assertion failure. If you have
+                            some stack of simulations and you want to get results from all simulations
+                            despite some assertion failures in previous one.
+                            -->
+                            <continueOnAssertionFailure>false</continueOnAssertionFailure>
+
+
+                            <useOldJenkinsJUnitSupport>false</useOldJenkinsJUnitSupport>
+
+                            <!--
+                            Extra JVM arguments to pass when running Gatling.
+                            -->
+                            <jvmArgs>
+                                <jvmArg>-server</jvmArg>
+                                <arg>-DisMaxPerf=${isMaxPerf}</arg>
+                                <arg>-DisStable=${isStable}</arg>
+                                <arg>-Dduration=${duration}</arg>
+                                <arg>-Dtps=${tps}</arg>
+                                <arg>-Dthread_count=${thread_count}</arg>
+                                <arg>-Dtitle="${title}"</arg>
+
+                            </jvmArgs>
+
+                            <!--
+                            Override Gatling's default JVM args, instead of replacing them.
+                            -->
+                            <overrideJvmArgs>false</overrideJvmArgs>
+
+                            <!--
+                            Propagate System properties to forked processes.
+                            -->
+                            <propagateSystemProperties>true</propagateSystemProperties>
+
+
+                            <compilerJvmArgs>
+                                <compilerJvmArg></compilerJvmArg>
+                            </compilerJvmArgs>
+
+                            <!-- if compiler should be disabled, typically because another plugin has already compiled sources -->
+                            <disableCompiler>false</disableCompiler>
+
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
-        
+
+
         <profile>
         	<id>Stable</id>
         	<properties>
@@ -426,11 +382,73 @@
         	<id>MaxPerf</id>
         	<properties>
         		<isMaxPerf>1</isMaxPerf>
-        		<duration>60</duration>
+        		<duration>600</duration>
         		<tps>0.1</tps>
         		<thread_count>100</thread_count>
         		<title>MaxPerf</title>
         	</properties>
+        </profile>
+
+        <profile>
+            <id>zoom</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.lazerycode.jmeter</groupId>
+                        <artifactId>jmeter-maven-plugin</artifactId>
+                        <configuration>
+                            <propertiesJMeter>
+                                <jmeter.hidpi.mode>true</jmeter.hidpi.mode>
+                                <jmeter.hidpi.scale.factor>2.0</jmeter.hidpi.scale.factor>
+                                <jmeter.toolbar.icons.size>32x32</jmeter.toolbar.icons.size>
+                                <jmeter.tree.icons.size>24x24</jmeter.tree.icons.size>
+                                <jsyntaxtextarea.font.family>Hack</jsyntaxtextarea.font.family>
+                                <jsyntaxtextarea.font.size>24</jsyntaxtextarea.font.size>
+                            </propertiesJMeter>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- SOCKS proxy configuration -->
+        <profile>
+            <id>socks</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.lazerycode.jmeter</groupId>
+                        <artifactId>jmeter-maven-plugin</artifactId>
+                        <configuration>
+                            <jMeterProcessJVMSettings>
+                                <arguments>
+                                    <argument>-DsocksProxyHost=127.0.0.1</argument>
+                                    <argument>-DsocksProxyPort=8888</argument>
+                                </arguments>
+                            </jMeterProcessJVMSettings>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- HTTP proxy configuration -->
+        <profile>
+            <id>proxy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.lazerycode.jmeter</groupId>
+                        <artifactId>jmeter-maven-plugin</artifactId>
+                        <configuration>
+                            <proxyConfig>
+                                <host>localhost</host>
+                                <port>8888</port>
+                            </proxyConfig>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
