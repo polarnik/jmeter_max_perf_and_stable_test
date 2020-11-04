@@ -382,9 +382,9 @@
         	<id>MaxPerf</id>
         	<properties>
         		<isMaxPerf>1</isMaxPerf>
-        		<duration>600</duration>
-        		<tps>0.1</tps>
-        		<thread_count>100</thread_count>
+        		<duration>900</duration>
+        		<tps>0.05</tps>
+        		<thread_count>200</thread_count>
         		<title>MaxPerf</title>
         	</properties>
         </profile>
