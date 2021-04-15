@@ -25,7 +25,6 @@ class Stable_OpenModel extends Simulation {
   setUp(
     userOpenMainPage
       .inject(
-        //rampUsersPerSec(maxTPS) to (maxTPS) during (duration_sec seconds)
         constantUsersPerSec(maxTPS) during (duration_sec seconds)
       )
       .protocols(Protocol.httpConf)

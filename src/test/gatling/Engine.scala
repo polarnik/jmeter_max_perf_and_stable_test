@@ -24,7 +24,7 @@ object Engine extends App {
 
     data.graphite.RootPathPrefix -> s"v2.gatling.${cfg.run()}.${cfg.host()}",
 
-    core.SimulationClass -> "info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_RPS",
+    core.SimulationClass -> "info.ragozin.loadlab.wp.simulation.MaxPerf_CloseModel_Levels_RPS",
     core.RunDescription -> "open workload model - Stress Test"
   )
 

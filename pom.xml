@@ -106,6 +106,7 @@
                             </testFilesIncluded>
                             <jmeterVersion>${jmeter.version}</jmeterVersion>
 
+
                             <jmeterExtensions>
                                 <!-- Custom Thread Groups
                                 https://jmeter-plugins.org/?search=jpgc-casutg
@@ -172,6 +173,7 @@
                             <reportDirectory>${project.build.directory}/jmeter/results</reportDirectory>
 
 
+
                             <!-- Configuring the jvm that the jmeter process runs in
                             https://github.com/jmeter-maven-plugin/jmeter-maven-plugin/wiki/Configuring-the-jvm-that-the-jmeter-process-runs-in
                             http://reins.altervista.org/java/A_Collection_of_JVM_Options_MP.html
@@ -196,6 +198,7 @@
                                     <argument>-server</argument>
                                 </arguments>
                             </jMeterProcessJVMSettings>
+
                         </configuration>
                     </plugin>
 
@@ -212,7 +215,7 @@
                 <scala.version>2.12.7</scala.version>
                 <scala.compat.version>2.12</scala.compat.version>
                 <namespace>info.ragozin.loadlab.wp.simulation</namespace>
-                <simulation>MaxPerf_CloseModel_RPS</simulation>
+                <simulation>MaxPerf_CloseModel_Levels_RPS</simulation>
             </properties>
             <dependencies>
                 <dependency>
@@ -286,7 +289,7 @@
                             <!--
                             A name of a Simulation class to run.
                             -->
-                            <simulationClass>${namespace}.MaxPerf_CloseModel_RPS</simulationClass>
+                            <simulationClass>${namespace}.${simulation}</simulationClass>
                             <!--
                             Iterate over multiple simulations if more than one simulation file is found. By default false.
                             If multiple simulations are found but {runMultipleSimulations} is false the execution will fail.
@@ -387,6 +390,17 @@
         		<thread_count>200</thread_count>
         		<title>MaxPerf</title>
         	</properties>
+        </profile>
+
+        <profile>
+            <id>WarmUp</id>
+            <properties>
+                <isWarmUp>1</isWarmUp>
+                <duration>900</duration>
+                <thread_count>3</thread_count>
+                <title>WarmUp</title>
+                <jmx>WarmUp_CloseModel</jmx>
+            </properties>
         </profile>
 
         <profile>

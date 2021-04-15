@@ -36,7 +36,6 @@ class Stable_CloseModel extends Simulation {
   setUp(
     userOpenMainPage
       .inject(
-        //rampConcurrentUsers(virtual_users_count) to (virtual_users_count) during (duration_sec seconds)
         constantConcurrentUsers(virtual_users_count) during (duration_sec seconds)
       )
       .protocols(Protocol.httpConf)
